@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Display Controller</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="./auth/css/styles.css">
+</head>
+<body data-theme="dark">
+    <div class="dashboard-container">
+        <!-- Sidebar Toggle Button -->
+        <button class="icon-btn sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="logo">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <h1>DisplayCtrl</h1>
+                </div>
+                <button class="icon-btn sidebar-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <nav class="navigation">
+                <div class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+            </nav>
+
+            <div class="status-panel">
+                <div class="status-item">
+                    <i class="fas fa-wifi"></i>
+                    <div class="status-info">
+                        <span class="status-label">WiFi Status</span>
+                        <span class="status-value" id="wifiStatus">2.4GHz</span>
+                    </div>
+                </div>
+                <button class="btn theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                    <span>Dark Mode</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-left">
+                    <h2>Device Controller</h2>
+                    <p class="breadcrumb">Dashboard / Main Display</p>
+                </div>
+                <div class="header-right">
+                    <button class="icon-btn" id="contextMenuTrigger">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Section -->
+            <div class="content-section">
+                <!-- Message Card -->
+                <div class="card message-card">
+                    <div class="card-header">
+                        <i class="fas fa-comment-alt"></i>
+                        <h3>Send Text Message</h3>
+                    </div>
+                    <div class="card-body">
+                        <textarea 
+                            class="message-input" 
+                            placeholder="Enter your message..."
+                            rows="4"
+                        ></textarea>
+                        <button class="btn primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Send to Display
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Card -->
+                <div class="card upload-card">
+                    <div class="card-header">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Upload Media</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-zone" id="uploadZone">
+                            <div class="upload-content">
+                                <i class="fas fa-file-import"></i>
+                                <p>Drag & Drop Files Here</p>
+                                <p class="upload-or">or</p>
+                                <input type="file" id="fileInput" hidden>
+                                <label for="fileInput" class="btn secondary">
+                                    Browse Files
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Context Menu (Moved to root level) -->
+        <div class="context-menu" id="contextMenu">
+            <div class="menu-item">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="./auth/css/js/dashboard.js"></script>
+</body>
+</html>
