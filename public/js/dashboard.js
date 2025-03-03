@@ -7,7 +7,8 @@ class DashboardController {
         this.cacheElements();
         this.setupEventListeners();
         this.loadTheme();
-        this.simulateStatusUpdates();
+        this.updateClock();
+        setInterval(() => this.updateClock(), 1000);
     }
 
     cacheElements() {
@@ -18,12 +19,27 @@ class DashboardController {
         this.uploadZone = document.getElementById('uploadZone');
         this.fileInput = document.getElementById('fileInput');
         this.wifiStatus = document.getElementById('wifiStatus');
+        this.messageInput = document.getElementById('messageInput');
+        this.sendButton = document.getElementById('sendButton');
+        this.previewText = document.getElementById('previewText');
+        this.previewImage = document.getElementById('previewImage');
+        this.fileList = document.getElementById('fileList');
     }
 
     setupEventListeners() {
         // Sidebar Toggle
         document.getElementById('sidebarToggle').addEventListener('click', () => {
             this.toggleSidebar();
+        });
+
+        // Sidebar Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+                const section = item.getAttribute('data-section');
+                this.showSection(section);
+            });
         });
 
         // Context Menu
@@ -44,31 +60,59 @@ class DashboardController {
 
         // File Handling
         this.setupFileHandling();
+
+        // Message Input Preview
+        this.messageInput.addEventListener('input', () => {
+            this.previewText.textContent = this.messageInput.value || 'Your message will appear here...';
+            this.previewImage.style.display = 'none';
+            this.previewText.style.display = 'block';
+        });
+
+        // Send Button (Simulated)
+        this.sendButton.addEventListener('click', () => {
+            this.sendMessage();
+        });
+
+        // Context Menu Actions
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const action = item.getAttribute('data-action');
+                if (action === 'profile') {
+                    alert('Profile feature coming soon.');
+                } else if (action === 'settings') {
+                    alert('Settings feature coming soon.');
+                } else if (action === 'logout') {
+                    localStorage.removeItem('user');
+                    alert('Logged out successfully.');
+                }
+            });
+        });
     }
 
     toggleSidebar() {
         this.sidebar.classList.toggle('collapsed');
-        this.mainContent.style.marginLeft = this.sidebar.classList.contains('collapsed') 
-            ? '0' 
-            : '280px';
+        const toggleButton = document.getElementById('sidebarToggle');
+        toggleButton.style.display = this.sidebar.classList.contains('collapsed') ? 'block' : 'none';
+    }
+
+    showSection(section) {
+        document.querySelectorAll('.content-section, .settings-panel, .history-panel').forEach(el => {
+            el.style.display = 'none';
+        });
+        document.getElementById(`${section}Section`).style.display = 'grid';
     }
 
     showContextMenu(e) {
         e.stopPropagation();
         this.contextMenu.style.display = 'block';
-        
-        // Position menu at click location
         const yPos = e.clientY + window.scrollY;
         const xPos = e.clientX + window.scrollX;
-        
-        // Ensure menu stays within viewport
         const viewportWidth = window.innerWidth;
         const menuWidth = this.contextMenu.offsetWidth;
-        
         this.contextMenu.style.top = `${yPos}px`;
         this.contextMenu.style.left = `${Math.min(xPos, viewportWidth - menuWidth - 10)}px`;
     }
-    
+
     hideContextMenu() {
         this.contextMenu.style.display = 'none';
     }
@@ -76,11 +120,8 @@ class DashboardController {
     toggleTheme() {
         const isDark = document.body.getAttribute('data-theme') === 'dark';
         const newTheme = isDark ? 'light' : 'dark';
-        
         document.body.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
-        
-        // Update the toggle based on the new theme
         this.themeToggle.innerHTML = newTheme === 'dark'
             ? '<i class="fas fa-moon"></i><span>Dark Mode</span>'
             : '<i class="fas fa-sun"></i><span>Light Mode</span>';
@@ -128,19 +169,41 @@ class DashboardController {
         if (files.length > 0) {
             const file = files[0];
             const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            
             if (!validTypes.includes(file.type)) {
                 this.showError('Invalid file type. Supported formats: JPEG, PNG, GIF');
                 return;
             }
-            
             if (file.size > 5 * 1024 * 1024) {
                 this.showError('File size exceeds 5MB limit');
                 return;
             }
-            
-            console.log('Valid file:', file.name);
+            this.fileList.innerHTML = `<div>${file.name}</div>`;
+            // Simulate upload
+            setTimeout(() => {
+                alert('File uploaded (simulated)!');
+                this.fileList.innerHTML = '';
+                this.fileInput.value = '';
+            }, 2000);
         }
+    }
+
+    sendMessage() {
+        const message = this.messageInput.value.trim();
+        if (message) {
+            this.sendButton.disabled = true;
+            this.sendButton.innerHTML = 'Sending...';
+            setTimeout(() => {
+                this.sendButton.disabled = false;
+                this.sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>Send to Display';
+                this.messageInput.value = '';
+                this.previewText.textContent = 'Your message will appear here...';
+                alert('Message sent (simulated)!');
+            }, 2000);
+        }
+    }
+
+    updateClock() {
+        document.getElementById('headerClock').textContent = new Date().toLocaleTimeString();
     }
 
     showError(message) {
@@ -148,19 +211,7 @@ class DashboardController {
         errorDiv.className = 'error-message';
         errorDiv.textContent = message;
         document.querySelector('.content-section').prepend(errorDiv);
-        
         setTimeout(() => errorDiv.remove(), 5000);
-    }
-
-    simulateStatusUpdates() {
-        setInterval(() => {
-            this.wifiStatus.textContent = Math.random() > 0.1 
-                ? '2.4GHz' 
-                : 'Disconnected';
-            this.wifiStatus.style.color = Math.random() > 0.1 
-                ? 'var(--success)' 
-                : 'var(--error)';
-        }, 5000);
     }
 }
 

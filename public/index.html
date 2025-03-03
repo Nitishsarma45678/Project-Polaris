@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="./css/styles.css">
 </head>
-<body data-theme="dark">
+<body>
     <div class="dashboard-container">
-        <!-- Sidebar Toggle Button -->
-        <button class="icon-btn sidebar-toggle" id="sidebarToggle">
+        <!-- Sidebar Toggle Button (for collapsed state) -->
+        <button class="icon-btn sidebar-toggle" id="sidebarToggle" style="display: none;">
             <i class="fas fa-bars"></i>
         </button>
 
@@ -30,13 +30,17 @@
             </div>
 
             <nav class="navigation">
-                <div class="nav-item active">
+                <div class="nav-item active" data-section="dashboard">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </div>
-                <div class="nav-item">
+                <div class="nav-item" data-section="settings">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
+                </div>
+                <div class="nav-item" data-section="history">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
                 </div>
             </nav>
 
@@ -62,6 +66,7 @@
                     <h2>Device Controller</h2>
                     <p class="breadcrumb">Dashboard / Main Display</p>
                 </div>
+                <div class="header-clock" id="headerClock"></div>
                 <div class="header-right">
                     <button class="icon-btn" id="contextMenuTrigger">
                         <i class="fas fa-ellipsis-v"></i>
@@ -70,7 +75,7 @@
             </header>
 
             <!-- Content Section -->
-            <div class="content-section">
+            <div class="content-section" id="dashboardSection">
                 <!-- Message Card -->
                 <div class="card message-card">
                     <div class="card-header">
@@ -80,10 +85,11 @@
                     <div class="card-body">
                         <textarea 
                             class="message-input" 
+                            id="messageInput"
                             placeholder="Enter your message..."
                             rows="4"
                         ></textarea>
-                        <button class="btn primary">
+                        <button class="btn primary" id="sendButton" aria-label="Send message to display">
                             <i class="fas fa-paper-plane"></i>
                             Send to Display
                         </button>
@@ -107,24 +113,51 @@
                                     Browse Files
                                 </label>
                             </div>
+                            <div class="file-list" id="fileList"></div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Preview Card -->
+                <div class="card preview-card">
+                    <div class="card-header">
+                        <i class="fas fa-eye"></i>
+                        <h3>Display Preview</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="preview-content" id="previewContent">
+                            <p id="previewText">Your message will appear here...</p>
+                            <img id="previewImage" src="" alt="Preview Image" style="display: none; max-width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section (Placeholder) -->
+            <div class="settings-panel" id="settingsSection" style="display: none;">
+                <h3>Settings</h3>
+                <p>Feature coming soon...</p>
+            </div>
+
+            <!-- History Section (Placeholder) -->
+            <div class="history-panel" id="historySection" style="display: none;">
+                <h3>History</h3>
+                <p>Feature coming soon...</p>
             </div>
         </main>
 
         <!-- Context Menu (Moved to root level) -->
         <div class="context-menu" id="contextMenu">
-            <div class="menu-item">
+            <div class="menu-item" data-action="profile">
                 <i class="fas fa-user"></i>
                 <span>Profile</span>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" data-action="settings">
                 <i class="fas fa-cog"></i>
                 <span>Settings</span>
             </div>
             <div class="menu-divider"></div>
-            <div class="menu-item">
+            <div class="menu-item" data-action="logout">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </div>
