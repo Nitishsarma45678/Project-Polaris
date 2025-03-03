@@ -74,7 +74,7 @@
                 </div>
             </header>
 
-            <!-- Content Section -->
+            <!-- Dashboard Section -->
             <div class="content-section" id="dashboardSection">
                 <!-- Message Card -->
                 <div class="card message-card">
@@ -133,20 +133,58 @@
                 </div>
             </div>
 
-            <!-- Settings Section (Placeholder) -->
+            <!-- Settings Section -->
             <div class="settings-panel" id="settingsSection" style="display: none;">
-                <h3>Settings</h3>
-                <p>Feature coming soon...</p>
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-cog"></i>
+                        <h3>Settings</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="setting-item">
+                            <label for="brightness">Display Brightness</label>
+                            <input type="range" id="brightness" min="0" max="100" value="50">
+                        </div>
+                        <div class="setting-item">
+                            <label for="autoTheme">Auto Theme Toggle</label>
+                            <input type="checkbox" id="autoTheme">
+                        </div>
+                        <button class="btn primary" id="saveSettings">Save Settings</button>
+                    </div>
+                </div>
             </div>
 
-            <!-- History Section (Placeholder) -->
+            <!-- History Section -->
             <div class="history-panel" id="historySection" style="display: none;">
-                <h3>History</h3>
-                <p>Feature coming soon...</p>
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-history"></i>
+                        <h3>History</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="history-list" id="historyList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div class="profile-panel" id="profileSection" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-user"></i>
+                        <h3>Profile</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="profile-info">
+                            <p><strong>Name:</strong> <span id="profileName">Sherlock Holmes</span></p>
+                            <p><strong>Email:</strong> <span id="profileEmail">sherlock.@example.com</span></p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
 
-        <!-- Context Menu (Moved to root level) -->
+        <!-- Context Menu -->
         <div class="context-menu" id="contextMenu">
             <div class="menu-item" data-action="profile">
                 <i class="fas fa-user"></i>

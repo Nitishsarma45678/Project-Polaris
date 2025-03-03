@@ -1,5 +1,9 @@
 class DashboardController {
     constructor() {
+        this.history = [
+            { type: 'text', content: 'Hello World', timestamp: new Date().toLocaleString() },
+            { type: 'media', content: 'image.png', timestamp: new Date().toLocaleString() }
+        ];
         this.initialize();
     }
 
@@ -7,6 +11,8 @@ class DashboardController {
         this.cacheElements();
         this.setupEventListeners();
         this.loadTheme();
+        this.loadSettings();
+        this.renderHistory();
         this.updateClock();
         setInterval(() => this.updateClock(), 1000);
     }
@@ -24,6 +30,11 @@ class DashboardController {
         this.previewText = document.getElementById('previewText');
         this.previewImage = document.getElementById('previewImage');
         this.fileList = document.getElementById('fileList');
+        this.brightness = document.getElementById('brightness');
+        this.autoTheme = document.getElementById('autoTheme');
+        this.saveSettings = document.getElementById('saveSettings');
+        this.historyList = document.getElementById('historyList');
+        this.profileSection = document.getElementById('profileSection');
     }
 
     setupEventListeners() {
@@ -68,9 +79,19 @@ class DashboardController {
             this.previewText.style.display = 'block';
         });
 
-        // Send Button (Simulated)
+        // Send Button
         this.sendButton.addEventListener('click', () => {
             this.sendMessage();
+        });
+
+        // Save Settings
+        this.saveSettings.addEventListener('click', () => {
+            const settings = {
+                brightness: this.brightness.value,
+                autoTheme: this.autoTheme.checked
+            };
+            localStorage.setItem('settings', JSON.stringify(settings));
+            this.showSuccess('Settings saved (simulated)!');
         });
 
         // Context Menu Actions
@@ -78,12 +99,12 @@ class DashboardController {
             item.addEventListener('click', () => {
                 const action = item.getAttribute('data-action');
                 if (action === 'profile') {
-                    alert('Profile feature coming soon.');
+                    this.showSection('profile');
                 } else if (action === 'settings') {
-                    alert('Settings feature coming soon.');
+                    this.showSection('settings');
                 } else if (action === 'logout') {
                     localStorage.removeItem('user');
-                    alert('Logged out successfully.');
+                    this.showSuccess('Logged out successfully (simulated).');
                 }
             });
         });
@@ -96,10 +117,10 @@ class DashboardController {
     }
 
     showSection(section) {
-        document.querySelectorAll('.content-section, .settings-panel, .history-panel').forEach(el => {
+        document.querySelectorAll('.content-section, .settings-panel, .history-panel, .profile-panel').forEach(el => {
             el.style.display = 'none';
         });
-        document.getElementById(`${section}Section`).style.display = 'grid';
+        document.getElementById(`${section}Section`).style.display = section === 'profile' ? 'block' : 'grid';
     }
 
     showContextMenu(e) {
@@ -133,6 +154,14 @@ class DashboardController {
         this.themeToggle.innerHTML = savedTheme === 'dark'
             ? '<i class="fas fa-moon"></i><span>Dark Mode</span>'
             : '<i class="fas fa-sun"></i><span>Light Mode</span>';
+    }
+
+    loadSettings() {
+        const savedSettings = JSON.parse(localStorage.getItem('settings'));
+        if (savedSettings) {
+            this.brightness.value = savedSettings.brightness;
+            this.autoTheme.checked = savedSettings.autoTheme;
+        }
     }
 
     setupFileHandling() {
@@ -178,11 +207,11 @@ class DashboardController {
                 return;
             }
             this.fileList.innerHTML = `<div>${file.name}</div>`;
-            // Simulate upload
             setTimeout(() => {
-                alert('File uploaded (simulated)!');
+                this.showSuccess('File uploaded (simulated)!');
                 this.fileList.innerHTML = '';
                 this.fileInput.value = '';
+                this.addToHistory('media', file.name);
             }, 2000);
         }
     }
@@ -197,13 +226,36 @@ class DashboardController {
                 this.sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>Send to Display';
                 this.messageInput.value = '';
                 this.previewText.textContent = 'Your message will appear here...';
-                alert('Message sent (simulated)!');
+                this.addToHistory('text', message);
+                this.showSuccess('Message sent (simulated)!');
             }, 2000);
         }
     }
 
+    addToHistory(type, content) {
+        this.history.unshift({ type, content, timestamp: new Date().toLocaleString() });
+        this.renderHistory();
+    }
+
+    renderHistory() {
+        this.historyList.innerHTML = this.history.map(item => `
+            <div class="history-item">
+                <span>${item.type === 'text' ? 'Message' : 'File'}: ${item.content}</span>
+                <span>${item.timestamp}</span>
+            </div>
+        `).join('');
+    }
+
     updateClock() {
         document.getElementById('headerClock').textContent = new Date().toLocaleTimeString();
+    }
+
+    showSuccess(message) {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'success-message';
+        successDiv.textContent = message;
+        document.querySelector('.content-section').prepend(successDiv);
+        setTimeout(() => successDiv.remove(), 5000);
     }
 
     showError(message) {

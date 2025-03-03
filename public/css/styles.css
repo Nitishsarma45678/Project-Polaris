@@ -1,22 +1,22 @@
 :root {
-    --primary-bg: #0F172A;
-    --secondary-bg: #1E293B;
-    --accent: #0EA5E9;
-    --text-primary: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --border-color: #334155;
-    --success: #00C9A7;
-    --error: #EF4444;
+    --primary-bg: #1B1F27;         /* A very dark gray-blue for the main background */
+    --secondary-bg: #283044;       /* A muted, professional dark blue for secondary elements */
+    --accent: #2ECC71;             /* A fresh, professional green accent */
+    --text-primary: #ECEFF1;       /* A light, clean off-white for primary text */
+    --text-secondary: #B0BEC5;     /* A balanced gray for secondary text */
+    --border-color: #394C59;       /* A subtle, refined gray for borders */
+    --success: #28a745;            /* A strong, professional green for success messages */
+    --error: #e74c3c;              /* A clear, professional red for errors */
     --font-family: 'Inter', sans-serif;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="light"] {
-    --primary-bg: #F8FAFC;
-    --secondary-bg: #FFFFFF;
-    --text-primary: #0F172A;
-    --text-secondary: #64748B;
-    --border-color: #E2E8F0;
+    --primary-bg: #F8FAFC;         /* A clean, light background */
+    --secondary-bg: #FFFFFF;       /* Pure white for secondary elements */
+    --text-primary: #0F172A;       /* Deep, professional dark text */
+    --text-secondary: #64748B;     /* A balanced medium gray for secondary text */
+    --border-color: #E2E8F0;       /* A soft, light gray for borders */
 }
 
 * {
@@ -61,10 +61,9 @@ body {
     top: 1rem;
     left: 1rem;
     z-index: 1100;
-    display: none; /* Hidden by default */
+    display: none;
 }
 
-/* Show toggle button when sidebar is collapsed */
 .sidebar.collapsed ~ .sidebar-toggle {
     display: block;
 }
@@ -94,7 +93,7 @@ body {
 }
 
 .nav-item:hover {
-    background: rgba(14, 165, 233, 0.05);
+    background: rgba(46, 204, 113, 0.1);
 }
 
 /* Status Panel */
@@ -149,8 +148,8 @@ body {
     font-weight: 500;
 }
 
-/* Cards */
-.content-section, .settings-panel, .history-panel {
+/* Cards and Panels */
+.content-section, .settings-panel, .history-panel, .profile-panel {
     max-width: 800px;
     margin: 0 auto;
     display: grid;
@@ -221,7 +220,22 @@ body {
 .message-input:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+}
+
+.success-message {
+    background: var(--success);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+.error-message {
+    background: var(--error);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
 }
 
 /* Upload Zone */
@@ -235,7 +249,7 @@ body {
 
 .upload-zone.dragover {
     border-color: var(--accent);
-    background: rgba(14, 165, 233, 0.05);
+    background: rgba(46, 204, 113, 0.05);
 }
 
 .upload-content {
@@ -309,12 +323,33 @@ body {
 }
 
 .menu-item:hover {
-    background: rgba(14, 165, 233, 0.05);
+    background: rgba(46, 204, 113, 0.05);
 }
 
 .menu-divider {
     border-top: 1px solid var(--border-color);
     margin: 0.5rem 0;
+}
+
+/* Settings, History, Profile Styles */
+.setting-item {
+    margin-bottom: 1rem;
+}
+
+.setting-item label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-info p {
+    margin-bottom: 0.5rem;
 }
 
 /* Responsive Design */
@@ -323,7 +358,7 @@ body {
         padding: 1rem;
     }
     
-    .content-section, .settings-panel, .history-panel {
+    .content-section, .settings-panel, .history-panel, .profile-panel {
         gap: 1.5rem;
     }
     
