@@ -72,6 +72,7 @@ class DashboardController {
     hideContextMenu() {
         this.contextMenu.style.display = 'none';
     }
+
     toggleTheme() {
         const isDark = document.body.getAttribute('data-theme') === 'dark';
         const newTheme = isDark ? 'light' : 'dark';
@@ -79,7 +80,8 @@ class DashboardController {
         document.body.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         
-        this.themeToggle.innerHTML = isDark
+        // Update the toggle based on the new theme
+        this.themeToggle.innerHTML = newTheme === 'dark'
             ? '<i class="fas fa-moon"></i><span>Dark Mode</span>'
             : '<i class="fas fa-sun"></i><span>Light Mode</span>';
     }
