@@ -1,9 +1,25 @@
 class DashboardController {
     constructor() {
-        this.history = [
-            { type: 'text', content: 'Hello World', timestamp: new Date().toLocaleString() },
-            { type: 'media', content: 'image.png', timestamp: new Date().toLocaleString() }
-        ];
+        try {
+            this.history = JSON.parse(localStorage.getItem('history')) || [
+                { type: 'text', content: 'Hello World', timestamp: new Date().toLocaleString() },
+                { type: 'media', content: 'image.png', timestamp: new Date().toLocaleString() }
+            ];
+        } catch (e) {
+            console.error('Failed to parse history from localStorage:', e);
+            this.history = [
+                { type: 'text', content: 'Hello World', timestamp: new Date().toLocaleString() },
+                { type: 'media', content: 'image.png', timestamp: new Date().toLocaleString() }
+            ];
+        }
+
+        try {
+            this.sosMessages = JSON.parse(localStorage.getItem('sosMessages')) || [];
+        } catch (e) {
+            console.error('Failed to parse SOS messages from localStorage:', e);
+            this.sosMessages = [];
+        }
+
         this.initialize();
     }
 
@@ -13,9 +29,15 @@ class DashboardController {
         this.loadTheme();
         this.loadSettings();
         this.renderHistory();
+        this.renderSOSMessages();
         this.updateClock();
-        this.simulateWifiStatus(); // Add this to simulate WiFi status updates
+        this.simulateWifiStatus();
+        this.simulateSOSMessages();
         setInterval(() => this.updateClock(), 1000);
+
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }, 1000);
     }
 
     cacheElements() {
@@ -32,12 +54,16 @@ class DashboardController {
         this.autoTheme = document.getElementById('autoTheme');
         this.saveSettings = document.getElementById('saveSettings');
         this.historyList = document.getElementById('historyList');
+        this.sosList = document.getElementById('sosList');
         this.profileSection = document.getElementById('profileSection');
         this.messageInput = document.getElementById('messageInput');
         this.sendButton = document.getElementById('sendButton');
+        this.clearButton = document.getElementById('clearButton');
         this.previewText = document.getElementById('previewText');
         this.previewImage = document.getElementById('previewImage');
         this.fileList = document.getElementById('fileList');
+        this.uploadPreview = document.getElementById('uploadPreview');
+        this.uploadPreviewImage = document.getElementById('uploadPreviewImage');
     }
 
     setupEventListeners() {
@@ -53,6 +79,11 @@ class DashboardController {
                 item.classList.add('active');
                 const section = item.getAttribute('data-section');
                 this.showSection(section);
+            });
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    item.click();
+                }
             });
         });
 
@@ -80,11 +111,23 @@ class DashboardController {
             this.previewText.textContent = this.messageInput.value || 'Your message will appear here...';
             this.previewImage.style.display = 'none';
             this.previewText.style.display = 'block';
+            if (this.messageInput.value.length > 20) {
+                this.previewText.classList.add('scrolling');
+            } else {
+                this.previewText.classList.remove('scrolling');
+            }
         });
 
         // Send Button
         this.sendButton.addEventListener('click', () => {
             this.sendMessage();
+        });
+
+        // Clear Button
+        this.clearButton.addEventListener('click', () => {
+            this.messageInput.value = '';
+            this.previewText.textContent = 'Your message will appear here...';
+            this.previewText.classList.remove('scrolling');
         });
 
         // Save Settings
@@ -110,18 +153,21 @@ class DashboardController {
                     this.showSuccess('Logged out successfully (simulated).');
                 }
             });
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    item.click();
+                }
+            });
         });
     }
 
     toggleSidebar() {
         this.sidebar.classList.toggle('collapsed');
         if (this.sidebar.classList.contains('collapsed')) {
-            // Move toggle button to main header
             this.togglePlaceholder.appendChild(this.sidebarToggle);
             this.sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
             this.mainContent.style.marginLeft = '0';
         } else {
-            // Move toggle button back to sidebar header
             document.querySelector('.sidebar-header').appendChild(this.sidebarToggle);
             this.sidebarToggle.innerHTML = '<i class="fas fa-times"></i>';
             this.mainContent.style.marginLeft = '280px';
@@ -219,10 +265,24 @@ class DashboardController {
                 return;
             }
             this.fileList.innerHTML = `<div>${file.name}</div>`;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.uploadPreviewImage.src = e.target.result;
+                this.uploadPreview.style.display = 'block';
+                this.previewImage.src = e.target.result;
+                this.previewImage.style.display = 'block';
+                this.previewText.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+
             setTimeout(() => {
                 this.showSuccess('File uploaded (simulated)!');
                 this.fileList.innerHTML = '';
                 this.fileInput.value = '';
+                this.uploadPreview.style.display = 'none';
+                this.previewImage.style.display = 'none';
+                this.previewText.style.display = 'block';
                 this.addToHistory('media', file.name);
             }, 2000);
         }
@@ -232,12 +292,13 @@ class DashboardController {
         const message = this.messageInput.value.trim();
         if (message) {
             this.sendButton.disabled = true;
-            this.sendButton.innerHTML = 'Sending...';
+            this.sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             setTimeout(() => {
                 this.sendButton.disabled = false;
                 this.sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>Send to Display';
                 this.messageInput.value = '';
                 this.previewText.textContent = 'Your message will appear here...';
+                this.previewText.classList.remove('scrolling');
                 this.addToHistory('text', message);
                 this.showSuccess('Message sent (simulated)!');
             }, 2000);
@@ -246,7 +307,20 @@ class DashboardController {
 
     addToHistory(type, content) {
         this.history.unshift({ type, content, timestamp: new Date().toLocaleString() });
+        if (this.history.length > 50) {
+            this.history.pop();
+        }
+        localStorage.setItem('history', JSON.stringify(this.history));
         this.renderHistory();
+    }
+
+    addSOSMessage(message) {
+        this.sosMessages.unshift({ message, timestamp: new Date().toLocaleString() });
+        if (this.sosMessages.length > 50) {
+            this.sosMessages.pop();
+        }
+        localStorage.setItem('sosMessages', JSON.stringify(this.sosMessages));
+        this.renderSOSMessages();
     }
 
     renderHistory() {
@@ -258,18 +332,44 @@ class DashboardController {
         `).join('');
     }
 
+    renderSOSMessages() {
+        this.sosList.innerHTML = this.sosMessages.map(item => `
+            <div class="sos-item">
+                <span>${item.message}</span>
+                <span>${item.timestamp}</span>
+            </div>
+        `).join('');
+    }
+
     updateClock() {
         document.getElementById('headerClock').textContent = new Date().toLocaleTimeString();
     }
 
     simulateWifiStatus() {
-        // Simulate WiFi status updates every 5 seconds
         setInterval(() => {
-            const isConnected = Math.random() > 0.3; // 70% chance of being connected
+            const isConnected = Math.random() > 0.3;
             this.wifiStatus.textContent = isConnected ? '2.4GHz' : 'Disconnected';
             this.wifiStatus.classList.remove('connected', 'disconnected');
             this.wifiStatus.classList.add(isConnected ? 'connected' : 'disconnected');
         }, 5000);
+    }
+
+    simulateSOSMessages() {
+        const predefinedMessages = [
+            'Emergency: Fire Alert',
+            'Help Needed: Medical Emergency',
+            'Alert: Power Failure',
+            'Warning: Unauthorized Access',
+            'SOS: System Malfunction'
+        ];
+        setInterval(() => {
+            const shouldSendSOS = Math.random() > 0.7; // 30% chance every 10 seconds
+            if (shouldSendSOS) {
+                const randomMessage = predefinedMessages[Math.floor(Math.random() * predefinedMessages.length)];
+                this.addSOSMessage(randomMessage);
+                this.showError(randomMessage + ' (simulated)');
+            }
+        }, 10000);
     }
 
     showSuccess(message) {

@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
@@ -19,21 +24,21 @@
                     </div>
                     <h1>DisplayCtrl</h1>
                 </div>
-                <button class="icon-btn sidebar-toggle" id="sidebarToggle">
+                <button class="icon-btn sidebar-toggle" id="sidebarToggle" title="Toggle sidebar" aria-label="Toggle sidebar">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
             <nav class="navigation">
-                <div class="nav-item active" data-section="dashboard">
+                <div class="nav-item active" data-section="dashboard" role="button" tabindex="0" aria-label="Go to Dashboard">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </div>
-                <div class="nav-item" data-section="settings">
+                <div class="nav-item" data-section="settings" role="button" tabindex="0" aria-label="Go to Settings">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
                 </div>
-                <div class="nav-item" data-section="history">
+                <div class="nav-item" data-section="history" role="button" tabindex="0" aria-label="View History">
                     <i class="fas fa-history"></i>
                     <span>History</span>
                 </div>
@@ -47,7 +52,7 @@
                         <span class="status-value" id="wifiStatus">2.4GHz</span>
                     </div>
                 </div>
-                <button class="btn theme-toggle" id="themeToggle">
+                <button class="btn theme-toggle" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
                     <i class="fas fa-moon"></i>
                     <span>Dark Mode</span>
                 </button>
@@ -65,11 +70,13 @@
                     </div>
                     <p class="breadcrumb">Dashboard / Main Display</p>
                 </div>
-                <div class="header-clock" id="headerClock"></div>
-                <div class="header-right">
-                    <button class="icon-btn" id="contextMenuTrigger">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
+                <div class="header-right-group">
+                    <div class="header-clock" id="headerClock"></div>
+                    <div class="header-right">
+                        <button class="icon-btn" id="contextMenuTrigger" title="More options" aria-label="More options">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -87,11 +94,16 @@
                             id="messageInput"
                             placeholder="Enter your message..."
                             rows="4"
+                            aria-label="Enter message to send to display"
                         ></textarea>
-                        <button class="btn primary" id="sendButton" aria-label="Send message to display">
-                            <i class="fas fa-paper-plane"></i>
-                            Send to Display
-                        </button>
+                        <div class="button-group">
+                            <button class="btn primary" id="sendButton" aria-label="Send message to display">
+                                <i class="fas fa-paper-plane"></i> Send to Display
+                            </button>
+                            <button class="btn secondary" id="clearButton" aria-label="Clear message input">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -107,26 +119,48 @@
                                 <i class="fas fa-file-import"></i>
                                 <p>Drag & Drop Files Here</p>
                                 <p class="upload-or">or</p>
-                                <input type="file" id="fileInput" hidden>
+                                <input type="file" id="fileInput" hidden aria-label="Upload media file">
                                 <label for="fileInput" class="btn secondary">
                                     Browse Files
                                 </label>
                             </div>
                             <div class="file-list" id="fileList"></div>
                         </div>
+                        <div class="upload-preview" id="uploadPreview" style="display: none;">
+                            <img id="uploadPreviewImage" src="" alt="File Preview" style="max-width: 100%; border-radius: 4px;">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Preview Card -->
-                <div class="card preview-card">
-                    <div class="card-header">
-                        <i class="fas fa-eye"></i>
-                        <h3>Display Preview</h3>
+                <!-- Bottom Row: Display Preview and SOS Alerts -->
+                <div class="bottom-row">
+                    <!-- Preview Card -->
+                    <div class="card preview-card">
+                        <div class="card-header">
+                            <i class="fas fa-eye"></i>
+                            <h3>Display Preview</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="preview-content" id="previewContent">
+                                <p id="previewText">Your message will appear here...</p>
+                                <img id="previewImage" src="" alt="Preview Image" style="display: none; max-width: 100%;">
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="preview-content" id="previewContent">
-                            <p id="previewText">Your message will appear here...</p>
-                            <img id="previewImage" src="" alt="Preview Image" style="display: none; max-width: 100%;">
+
+                    <!-- SOS Alerts Card -->
+                    <div class="card sos-card">
+                        <div class="card-header">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>SOS Alerts</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="sos-list" id="sosList">
+                                <p class="sos-placeholder" id="sosPlaceholder">No SOS alerts received.</p>
+                            </div>
+                            <button class="btn secondary clear-sos-btn" id="clearSOSButton" aria-label="Clear SOS alerts">
+                                <i class="fas fa-trash"></i> Clear Alerts
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -142,13 +176,13 @@
                     <div class="card-body">
                         <div class="setting-item">
                             <label for="brightness">Display Brightness</label>
-                            <input type="range" id="brightness" min="0" max="100" value="50">
+                            <input type="range" id="brightness" min="0" max="100" value="50" aria-label="Adjust display brightness">
                         </div>
                         <div class="setting-item">
                             <label for="autoTheme">Auto Theme Toggle</label>
-                            <input type="checkbox" id="autoTheme">
+                            <input type="checkbox" id="autoTheme" aria-label="Enable auto theme toggle">
                         </div>
-                        <button class="btn primary" id="saveSettings">Save Settings</button>
+                        <button class="btn primary" id="saveSettings" aria-label="Save settings">Save Settings</button>
                     </div>
                 </div>
             </div>
@@ -185,16 +219,16 @@
 
         <!-- Context Menu -->
         <div class="context-menu" id="contextMenu">
-            <div class="menu-item" data-action="profile">
+            <div class="menu-item" data-action="profile" role="menuitem" tabindex="0" aria-label="View profile">
                 <i class="fas fa-user"></i>
                 <span>Profile</span>
             </div>
-            <div class="menu-item" data-action="settings">
+            <div class="menu-item" data-action="settings" role="menuitem" tabindex="0" aria-label="Go to settings">
                 <i class="fas fa-cog"></i>
                 <span>Settings</span>
             </div>
             <div class="menu-divider"></div>
-            <div class="menu-item" data-action="logout">
+            <div class="menu-item" data-action="logout" role="menuitem" tabindex="0" aria-label="Log out">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </div>
