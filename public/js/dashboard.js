@@ -20,6 +20,15 @@ class DashboardController {
             this.sosMessages = [];
         }
 
+        try {
+            this.scheduledMessages = JSON.parse(localStorage.getItem('scheduledMessages')) || [];
+        } catch (e) {
+            console.error('Failed to parse scheduled messages from localStorage:', e);
+            this.scheduledMessages = [];
+        }
+
+        this.isScheduleMode = false; // Track whether we're in schedule mode
+
         this.initialize();
     }
 
@@ -28,12 +37,17 @@ class DashboardController {
         this.setupEventListeners();
         this.loadTheme();
         this.loadSettings();
+        this.loadPreviewSettings();
         this.renderHistory();
         this.renderSOSMessages();
+        this.renderScheduledMessages();
         this.updateClock();
         this.simulateWifiStatus();
         this.simulateSOSMessages();
+        this.simulateDeviceStatus();
+        this.processScheduledMessages();
         setInterval(() => this.updateClock(), 1000);
+        setInterval(() => this.processScheduledMessages(), 1000);
 
         setTimeout(() => {
             document.getElementById('loadingOverlay').style.display = 'none';
@@ -51,16 +65,37 @@ class DashboardController {
         this.fileInput = document.getElementById('fileInput');
         this.wifiStatus = document.getElementById('wifiStatus');
         this.brightness = document.getElementById('brightness');
+        this.brightnessValue = document.getElementById('brightnessValue');
+        this.scrollSpeed = document.getElementById('scrollSpeed');
+        this.scrollSpeedValue = document.getElementById('scrollSpeedValue');
+        this.fontSizeSetting = document.getElementById('fontSizeSetting');
+        this.messageDuration = document.getElementById('messageDuration');
+        this.messageDurationValue = document.getElementById('messageDurationValue');
+        this.themeSelector = document.getElementById('themeSelector');
+        this.accentColor = document.getElementById('accentColor');
         this.autoTheme = document.getElementById('autoTheme');
         this.saveSettings = document.getElementById('saveSettings');
         this.historyList = document.getElementById('historyList');
         this.sosList = document.getElementById('sosList');
+        this.sosPlaceholder = document.getElementById('sosPlaceholder');
+        this.clearSOSButton = document.getElementById('clearSOSButton');
+        this.toggleScheduleMode = document.getElementById('toggleScheduleMode');
+        this.scheduleOptions = document.getElementById('scheduleOptions');
+        this.scheduleTime = document.getElementById('scheduleTime');
+        this.actionButton = document.getElementById('actionButton');
+        this.scheduleList = document.getElementById('scheduleList');
+        this.deviceBattery = document.getElementById('deviceBattery');
+        this.deviceTemperature = document.getElementById('deviceTemperature');
+        this.deviceUptime = document.getElementById('deviceUptime');
+        this.textAlign = document.getElementById('textAlign');
+        this.fontSize = document.getElementById('fontSize');
+        this.backgroundColor = document.getElementById('backgroundColor');
         this.profileSection = document.getElementById('profileSection');
         this.messageInput = document.getElementById('messageInput');
-        this.sendButton = document.getElementById('sendButton');
         this.clearButton = document.getElementById('clearButton');
         this.previewText = document.getElementById('previewText');
         this.previewImage = document.getElementById('previewImage');
+        this.previewContent = document.getElementById('previewContent');
         this.fileList = document.getElementById('fileList');
         this.uploadPreview = document.getElementById('uploadPreview');
         this.uploadPreviewImage = document.getElementById('uploadPreviewImage');
@@ -118,26 +153,108 @@ class DashboardController {
             }
         });
 
-        // Send Button
-        this.sendButton.addEventListener('click', () => {
-            this.sendMessage();
+        // Toggle Schedule Mode
+        this.toggleScheduleMode.addEventListener('click', () => {
+            this.isScheduleMode = !this.isScheduleMode;
+            if (this.isScheduleMode) {
+                this.scheduleOptions.style.display = 'block';
+                this.actionButton.innerHTML = '<i class="fas fa-calendar-plus"></i> Schedule';
+                this.toggleScheduleMode.innerHTML = '<i class="fas fa-paper-plane"></i> Send Now';
+            } else {
+                this.scheduleOptions.style.display = 'none';
+                this.actionButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send to Display';
+                this.toggleScheduleMode.innerHTML = '<i class="fas fa-clock"></i> Schedule';
+                this.scheduleTime.value = '';
+            }
+        });
+
+        // Action Button (Send or Schedule)
+        this.actionButton.addEventListener('click', () => {
+            if (this.isScheduleMode) {
+                this.scheduleMessage();
+            } else {
+                this.sendMessage();
+            }
         });
 
         // Clear Button
         this.clearButton.addEventListener('click', () => {
             this.messageInput.value = '';
+            this.scheduleTime.value = '';
             this.previewText.textContent = 'Your message will appear here...';
             this.previewText.classList.remove('scrolling');
+        });
+
+        // Clear SOS Button
+        this.clearSOSButton.addEventListener('click', () => {
+            this.sosMessages = [];
+            localStorage.setItem('sosMessages', JSON.stringify(this.sosMessages));
+            this.renderSOSMessages();
+        });
+
+        // Preview Customization
+        this.textAlign.addEventListener('change', () => {
+            this.previewText.style.textAlign = this.textAlign.value;
+            localStorage.setItem('previewTextAlign', this.textAlign.value);
+        });
+
+        this.fontSize.addEventListener('change', () => {
+            this.previewText.style.fontSize = this.fontSize.value;
+            localStorage.setItem('previewFontSize', this.fontSize.value);
+        });
+
+        this.backgroundColor.addEventListener('change', () => {
+            this.previewContent.style.background = this.backgroundColor.value;
+            localStorage.setItem('previewBackgroundColor', this.backgroundColor.value);
+        });
+
+        // Display Settings
+        this.scrollSpeed.addEventListener('input', () => {
+            this.scrollSpeedValue.textContent = `${this.scrollSpeed.value}s`;
+            this.applyScrollSpeed();
+        });
+
+        this.fontSizeSetting.addEventListener('change', () => {
+            this.previewText.style.fontSize = this.fontSizeSetting.value;
+        });
+
+        this.brightness.addEventListener('input', () => {
+            this.brightnessValue.textContent = `${this.brightness.value}%`;
+        });
+
+        this.messageDuration.addEventListener('input', () => {
+            this.messageDurationValue.textContent = `${this.messageDuration.value}s`;
+        });
+
+        // Theme Customization
+        this.themeSelector.addEventListener('change', () => {
+            const theme = this.themeSelector.value;
+            if (theme === 'green') {
+                document.documentElement.style.setProperty('--accent', '#10B981');
+            } else if (theme === 'purple') {
+                document.documentElement.style.setProperty('--accent', '#A855F7');
+            } else {
+                document.documentElement.style.setProperty('--accent', '#6366F1');
+            }
+        });
+
+        this.accentColor.addEventListener('input', () => {
+            document.documentElement.style.setProperty('--accent', this.accentColor.value);
         });
 
         // Save Settings
         this.saveSettings.addEventListener('click', () => {
             const settings = {
+                scrollSpeed: this.scrollSpeed.value,
+                fontSize: this.fontSizeSetting.value,
                 brightness: this.brightness.value,
+                messageDuration: this.messageDuration.value,
+                theme: this.themeSelector.value,
+                accentColor: this.accentColor.value,
                 autoTheme: this.autoTheme.checked
             };
             localStorage.setItem('settings', JSON.stringify(settings));
-            this.showSuccess('Settings saved (simulated)!');
+            this.showSuccess('Settings saved!');
         });
 
         // Context Menu Actions
@@ -159,6 +276,117 @@ class DashboardController {
                 }
             });
         });
+    }
+
+    applyScrollSpeed() {
+        const duration = this.scrollSpeed.value;
+        this.previewText.style.animationDuration = `${duration}s`;
+        document.documentElement.style.setProperty('--scroll-duration', `${duration}s`);
+    }
+
+    loadPreviewSettings() {
+        const textAlign = localStorage.getItem('previewTextAlign') || 'center';
+        const fontSize = localStorage.getItem('previewFontSize') || '1rem';
+        const backgroundColor = localStorage.getItem('previewBackgroundColor') || '#1A1F36';
+
+        this.textAlign.value = textAlign;
+        this.fontSize.value = fontSize;
+        this.backgroundColor.value = backgroundColor;
+
+        this.previewText.style.textAlign = textAlign;
+        this.previewText.style.fontSize = fontSize;
+        this.previewContent.style.background = backgroundColor;
+    }
+
+    scheduleMessage() {
+        const message = this.messageInput.value.trim();
+        const time = this.scheduleTime.value;
+
+        if (!message || !time) {
+            this.showError('Please enter a message and select a time.');
+            return;
+        }
+
+        const scheduleTime = new Date(time).getTime();
+        const now = new Date().getTime();
+
+        if (scheduleTime <= now) {
+            this.showError('Please select a future time.');
+            return;
+        }
+
+        const scheduledMessage = {
+            message,
+            time: scheduleTime,
+            timestamp: new Date(scheduleTime).toLocaleString()
+        };
+
+        this.scheduledMessages.push(scheduledMessage);
+        localStorage.setItem('scheduledMessages', JSON.stringify(this.scheduledMessages));
+        this.renderScheduledMessages();
+        this.showSuccess('Message scheduled!');
+
+        this.messageInput.value = '';
+        this.scheduleTime.value = '';
+    }
+
+    renderScheduledMessages() {
+        this.scheduleList.innerHTML = this.scheduledMessages.map((item, index) => `
+            <div class="schedule-item">
+                <span>${item.message} - ${item.timestamp}</span>
+                <button data-index="${index}" class="cancel-schedule"><i class="fas fa-trash"></i></button>
+            </div>
+        `).join('');
+
+        // Add event listeners for cancel buttons
+        this.scheduleList.querySelectorAll('.cancel-schedule').forEach(button => {
+            button.addEventListener('click', () => {
+                const index = button.getAttribute('data-index');
+                this.scheduledMessages.splice(index, 1);
+                localStorage.setItem('scheduledMessages', JSON.stringify(this.scheduledMessages));
+                this.renderScheduledMessages();
+            });
+        });
+    }
+
+    processScheduledMessages() {
+        const now = new Date().getTime();
+        this.scheduledMessages = this.scheduledMessages.filter(item => {
+            if (now >= item.time) {
+                this.sendScheduledMessage(item.message);
+                return false; // Remove the message after sending
+            }
+            return true;
+        });
+        localStorage.setItem('scheduledMessages', JSON.stringify(this.scheduledMessages));
+        this.renderScheduledMessages();
+    }
+
+    sendScheduledMessage(message) {
+        this.previewText.textContent = message;
+        this.previewImage.style.display = 'none';
+        this.previewText.style.display = 'block';
+        if (message.length > 20) {
+            this.previewText.classList.add('scrolling');
+        } else {
+            this.previewText.classList.remove('scrolling');
+        }
+        this.addToHistory('text', message);
+        this.showSuccess(`Scheduled message sent: ${message}`);
+    }
+
+    simulateDeviceStatus() {
+        setInterval(() => {
+            const battery = Math.floor(Math.random() * 100);
+            const temperature = Math.floor(Math.random() * 40);
+            const uptimeMinutes = Math.floor(Math.random() * 120);
+            const hours = Math.floor(uptimeMinutes / 60);
+            const minutes = uptimeMinutes % 60;
+
+            this.deviceBattery.textContent = `${battery}%`;
+            this.deviceTemperature.textContent = `${temperature}°C`;
+            this.deviceUptime.textContent = `${hours}h ${minutes}m`;
+        }, 10000); // Update every 10 seconds
     }
 
     toggleSidebar() {
@@ -217,8 +445,21 @@ class DashboardController {
     loadSettings() {
         const savedSettings = JSON.parse(localStorage.getItem('settings'));
         if (savedSettings) {
-            this.brightness.value = savedSettings.brightness;
-            this.autoTheme.checked = savedSettings.autoTheme;
+            this.scrollSpeed.value = savedSettings.scrollSpeed || 5;
+            this.scrollSpeedValue.textContent = `${this.scrollSpeed.value}s`;
+            this.fontSizeSetting.value = savedSettings.fontSize || '1rem';
+            this.brightness.value = savedSettings.brightness || 50;
+            this.brightnessValue.textContent = `${this.brightness.value}%`;
+            this.messageDuration.value = savedSettings.messageDuration || 30;
+            this.messageDurationValue.textContent = `${this.messageDuration.value}s`;
+            this.themeSelector.value = savedSettings.theme || 'default';
+            this.accentColor.value = savedSettings.accentColor || '#6366F1';
+            this.autoTheme.checked = savedSettings.autoTheme || false;
+
+            // Apply settings
+            this.applyScrollSpeed();
+            this.previewText.style.fontSize = this.fontSizeSetting.value;
+            document.documentElement.style.setProperty('--accent', this.accentColor.value);
         }
     }
 
@@ -291,11 +532,13 @@ class DashboardController {
     sendMessage() {
         const message = this.messageInput.value.trim();
         if (message) {
-            this.sendButton.disabled = true;
-            this.sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            this.actionButton.disabled = true;
+            this.actionButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             setTimeout(() => {
-                this.sendButton.disabled = false;
-                this.sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>Send to Display';
+                this.actionButton.disabled = false;
+                this.actionButton.innerHTML = this.isScheduleMode
+                    ? '<i class="fas fa-calendar-plus"></i> Schedule'
+                    : '<i class="fas fa-paper-plane"></i> Send to Display';
                 this.messageInput.value = '';
                 this.previewText.textContent = 'Your message will appear here...';
                 this.previewText.classList.remove('scrolling');
@@ -315,12 +558,13 @@ class DashboardController {
     }
 
     addSOSMessage(message) {
-        this.sosMessages.unshift({ message, timestamp: new Date().toLocaleString() });
+        this.sosMessages.unshift({ message, timestamp: new Date().toLocaleString(), isNew: true });
         if (this.sosMessages.length > 50) {
             this.sosMessages.pop();
         }
         localStorage.setItem('sosMessages', JSON.stringify(this.sosMessages));
         this.renderSOSMessages();
+        this.showError(message + ' (simulated)');
     }
 
     renderHistory() {
@@ -333,12 +577,20 @@ class DashboardController {
     }
 
     renderSOSMessages() {
-        this.sosList.innerHTML = this.sosMessages.map(item => `
-            <div class="sos-item">
-                <span>${item.message}</span>
-                <span>${item.timestamp}</span>
-            </div>
-        `).join('');
+        if (this.sosMessages.length === 0) {
+            this.sosPlaceholder.style.display = 'block';
+            this.sosList.innerHTML = '<p class="sos-placeholder" id="sosPlaceholder">No SOS alerts received.</p>';
+        } else {
+            this.sosPlaceholder.style.display = 'none';
+            this.sosList.innerHTML = this.sosMessages.map(item => `
+                <div class="sos-item ${item.isNew ? 'new' : ''}">
+                    <span>${item.message}</span>
+                    <span>${item.timestamp}</span>
+                </div>
+            `).join('');
+            this.sosMessages.forEach(msg => msg.isNew = false);
+            localStorage.setItem('sosMessages', JSON.stringify(this.sosMessages));
+        }
     }
 
     updateClock() {
@@ -360,14 +612,14 @@ class DashboardController {
             'Help Needed: Medical Emergency',
             'Alert: Power Failure',
             'Warning: Unauthorized Access',
-            'SOS: System Malfunction'
+            'SOS: System Malfunction',
+            'Lost: Locate Me, I am Lost'
         ];
         setInterval(() => {
-            const shouldSendSOS = Math.random() > 0.7; // 30% chance every 10 seconds
+            const shouldSendSOS = Math.random() > 0.7;
             if (shouldSendSOS) {
                 const randomMessage = predefinedMessages[Math.floor(Math.random() * predefinedMessages.length)];
                 this.addSOSMessage(randomMessage);
-                this.showError(randomMessage + ' (simulated)');
             }
         }, 10000);
     }

@@ -231,7 +231,7 @@ body {
 .main-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Align items to the top */
+    align-items: flex-start;
     margin-bottom: 2rem;
 }
 
@@ -253,7 +253,7 @@ body {
     font-weight: 700;
     color: var(--text-primary);
     transition: var(--transition);
-    line-height: 1; /* Ensure consistent line height */
+    line-height: 1;
 }
 
 .header-left h2:hover {
@@ -268,14 +268,14 @@ body {
 
 .header-right-group {
     display: flex;
-    align-items: center; /* Vertically align clock and button */
-    gap: 0.5rem; /* Reduce gap between clock and button */
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .header-clock {
     font-size: 1.25rem;
     font-weight: 500;
-    line-height: 1; /* Ensure consistent line height */
+    line-height: 1;
 }
 
 .header-right {
@@ -288,17 +288,29 @@ body {
 .settings-panel,
 .history-panel,
 .profile-panel {
-    max-width: 800px;
+    max-width: 1200px; /* Increased to accommodate two columns */
     margin: 0 auto;
     display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
     gap: 2rem;
 }
 
 .content-section {
-    grid-template-areas: 
-        "message"
-        "upload"
-        "bottom-row";
+    grid-template-areas: "left-section right-section";
+}
+
+.left-section {
+    grid-area: left-section;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.right-section {
+    grid-area: right-section;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
 .message-card {
@@ -309,11 +321,8 @@ body {
     grid-area: upload;
 }
 
-.bottom-row {
-    grid-area: bottom-row;
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
+.device-status-card {
+    grid-area: device-status;
 }
 
 .card {
@@ -348,17 +357,50 @@ body {
     gap: 1.5rem;
 }
 
+/* Message Card (with Scheduling) */
+.schedule-toggle {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.schedule-options {
+    margin-bottom: 1rem;
+}
+
+.schedule-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.schedule-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+}
+
+.schedule-item button {
+    background: none;
+    border: none;
+    color: var(--error);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.schedule-item button:hover {
+    color: #E11D48; /* Slightly darker rose red */
+}
+
 /* Preview Card */
 .preview-card {
-    width: fit-content;
-    margin: 0;
+    width: 100%; /* Full width in the right section */
 }
 
 /* SOS Card */
 .sos-card {
-    width: fit-content;
-    min-width: 280px;
-    margin: 0;
+    width: 100%; /* Full width in the right section */
 }
 
 .sos-list {
@@ -435,6 +477,80 @@ body {
 .preview-content img {
     max-width: 100%;
     border-radius: 4px;
+}
+
+/* Preview Toolbar */
+.preview-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.preview-toolbar select {
+    padding: 0.5rem;
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.preview-toolbar select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Settings Card */
+.settings-group {
+    margin-bottom: 2rem;
+}
+
+.settings-group h4 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.setting-item {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.setting-item label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.setting-item input[type="range"] {
+    width: 100%;
+}
+
+.setting-item select,
+.setting-item input[type="color"],
+.setting-item input[type="datetime-local"] {
+    padding: 0.5rem;
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+}
+
+.setting-item select:focus,
+.setting-item input[type="color"]:focus,
+.setting-item input[type="datetime-local"]:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.setting-item input[type="color"] {
+    width: 50px;
+    height: 30px;
+    padding: 0;
 }
 
 /* Inputs */
@@ -614,27 +730,6 @@ body {
     margin: 0.5rem 0;
 }
 
-/* Settings, History, Profile Styles */
-.setting-item {
-    margin-bottom: 1rem;
-}
-
-.setting-item label {
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.history-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.profile-info p {
-    margin-bottom: 0.5rem;
-}
-
 /* Success and Error Messages */
 .success-message {
     background: var(--success);
@@ -653,6 +748,15 @@ body {
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+    .content-section {
+        grid-template-columns: 1fr; /* Stack sections on smaller screens */
+        grid-template-areas: 
+            "left-section"
+            "right-section";
+    }
+}
+
 @media (max-width: 768px) {
     .sidebar {
         width: 200px;
@@ -668,22 +772,7 @@ body {
     }
 
     .content-section {
-        grid-template-areas: 
-            "message"
-            "upload"
-            "bottom-row";
         max-width: 100%;
-    }
-
-    .bottom-row {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .preview-card,
-    .sos-card {
-        width: 100%;
-        margin: 0 auto;
     }
 }
 

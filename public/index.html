@@ -82,58 +82,104 @@
 
             <!-- Content Section -->
             <div class="content-section" id="dashboardSection">
-                <!-- Message Card -->
-                <div class="card message-card">
-                    <div class="card-header">
-                        <i class="fas fa-comment-alt"></i>
-                        <h3>Send Text Message</h3>
-                    </div>
-                    <div class="card-body">
-                        <textarea 
-                            class="message-input" 
-                            id="messageInput"
-                            placeholder="Enter your message..."
-                            rows="4"
-                            aria-label="Enter message to send to display"
-                        ></textarea>
-                        <div class="button-group">
-                            <button class="btn primary" id="sendButton" aria-label="Send message to display">
-                                <i class="fas fa-paper-plane"></i> Send to Display
-                            </button>
-                            <button class="btn secondary" id="clearButton" aria-label="Clear message input">
-                                <i class="fas fa-times"></i> Clear
-                            </button>
+                <!-- Left Section: Input Cards -->
+                <div class="left-section">
+                    <!-- Message Card (with Scheduling) -->
+                    <div class="card message-card">
+                        <div class="card-header">
+                            <i class="fas fa-comment-alt"></i>
+                            <h3>Send Text Message</h3>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Upload Card -->
-                <div class="card upload-card">
-                    <div class="card-header">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <h3>Upload Media</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="upload-zone" id="uploadZone">
-                            <div class="upload-content">
-                                <i class="fas fa-file-import"></i>
-                                <p>Drag & Drop Files Here</p>
-                                <p class="upload-or">or</p>
-                                <input type="file" id="fileInput" hidden aria-label="Upload media file">
-                                <label for="fileInput" class="btn secondary">
-                                    Browse Files
-                                </label>
+                        <div class="card-body">
+                            <textarea 
+                                class="message-input" 
+                                id="messageInput"
+                                placeholder="Enter your message..."
+                                rows="4"
+                                aria-label="Enter message to send to display"
+                            ></textarea>
+                            <div class="schedule-toggle">
+                                <button class="btn secondary" id="toggleScheduleMode" aria-label="Toggle schedule mode">
+                                    <i class="fas fa-clock"></i> Schedule
+                                </button>
                             </div>
-                            <div class="file-list" id="fileList"></div>
+                            <div class="schedule-options" id="scheduleOptions" style="display: none;">
+                                <div class="setting-item">
+                                    <label for="scheduleTime">Schedule Time</label>
+                                    <input type="datetime-local" id="scheduleTime" aria-label="Select schedule time">
+                                </div>
+                            </div>
+                            <div class="button-group">
+                                <button class="btn primary" id="actionButton" aria-label="Send message to display">
+                                    <i class="fas fa-paper-plane"></i> Send to Display
+                                </button>
+                                <button class="btn secondary" id="clearButton" aria-label="Clear message input">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                            <div class="schedule-list" id="scheduleList"></div>
                         </div>
-                        <div class="upload-preview" id="uploadPreview" style="display: none;">
-                            <img id="uploadPreviewImage" src="" alt="File Preview" style="max-width: 100%; border-radius: 4px;">
+                    </div>
+
+                    <!-- Upload Card -->
+                    <div class="card upload-card">
+                        <div class="card-header">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Upload Media</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="upload-zone" id="uploadZone">
+                                <div class="upload-content">
+                                    <i class="fas fa-file-import"></i>
+                                    <p>Drag & Drop Files Here</p>
+                                    <p class="upload-or">or</p>
+                                    <input type="file" id="fileInput" hidden aria-label="Upload media file">
+                                    <label for="fileInput" class="btn secondary">
+                                        Browse Files
+                                    </label>
+                                </div>
+                                <div class="file-list" id="fileList"></div>
+                            </div>
+                            <div class="upload-preview" id="uploadPreview" style="display: none;">
+                                <img id="uploadPreviewImage" src="" alt="File Preview" style="max-width: 100%; border-radius: 4px;">
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Bottom Row: Display Preview and SOS Alerts -->
-                <div class="bottom-row">
+                <!-- Right Section: Status and Monitoring Cards -->
+                <div class="right-section">
+                    <!-- Device Status Card -->
+                    <div class="card device-status-card">
+                        <div class="card-header">
+                            <i class="fas fa-microchip"></i>
+                            <h3>Device Status</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="status-item">
+                                <i class="fas fa-battery-three-quarters"></i>
+                                <div class="status-info">
+                                    <span class="status-label">Battery Level</span>
+                                    <span class="status-value" id="deviceBattery">75%</span>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <i class="fas fa-thermometer-half"></i>
+                                <div class="status-info">
+                                    <span class="status-label">Temperature</span>
+                                    <span class="status-value" id="deviceTemperature">25°C</span>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <i class="fas fa-clock"></i>
+                                <div class="status-info">
+                                    <span class="status-label">Uptime</span>
+                                    <span class="status-value" id="deviceUptime">1h 45m</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Preview Card -->
                     <div class="card preview-card">
                         <div class="card-header">
@@ -141,6 +187,23 @@
                             <h3>Display Preview</h3>
                         </div>
                         <div class="card-body">
+                            <div class="preview-toolbar">
+                                <select id="textAlign" aria-label="Text alignment">
+                                    <option value="left">Left</option>
+                                    <option value="center" selected>Center</option>
+                                    <option value="right">Right</option>
+                                </select>
+                                <select id="fontSize" aria-label="Font size">
+                                    <option value="0.875rem">Small</option>
+                                    <option value="1rem" selected>Medium</option>
+                                    <option value="1.125rem">Large</option>
+                                </select>
+                                <select id="backgroundColor" aria-label="Background color">
+                                    <option value="#1A1F36" selected>Default</option>
+                                    <option value="#000000">Black</option>
+                                    <option value="#333333">Dark Gray</option>
+                                </select>
+                            </div>
                             <div class="preview-content" id="previewContent">
                                 <p id="previewText">Your message will appear here...</p>
                                 <img id="previewImage" src="" alt="Preview Image" style="display: none; max-width: 100%;">
@@ -174,13 +237,50 @@
                         <h3>Settings</h3>
                     </div>
                     <div class="card-body">
-                        <div class="setting-item">
-                            <label for="brightness">Display Brightness</label>
-                            <input type="range" id="brightness" min="0" max="100" value="50" aria-label="Adjust display brightness">
+                        <div class="settings-group">
+                            <h4>Display Configuration</h4>
+                            <div class="setting-item">
+                                <label for="scrollSpeed">Text Scroll Speed (seconds)</label>
+                                <input type="range" id="scrollSpeed" min="2" max="10" value="5" step="1" aria-label="Adjust text scroll speed">
+                                <span id="scrollSpeedValue">5s</span>
+                            </div>
+                            <div class="setting-item">
+                                <label for="fontSizeSetting">Font Size</label>
+                                <select id="fontSizeSetting" aria-label="Select font size">
+                                    <option value="0.875rem">Small</option>
+                                    <option value="1rem" selected>Medium</option>
+                                    <option value="1.125rem">Large</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label for="brightness">Display Brightness</label>
+                                <input type="range" id="brightness" min="0" max="100" value="50" aria-label="Adjust display brightness">
+                                <span id="brightnessValue">50%</span>
+                            </div>
+                            <div class="setting-item">
+                                <label for="messageDuration">Message Duration (seconds)</label>
+                                <input type="range" id="messageDuration" min="5" max="60" value="30" step="5" aria-label="Adjust message duration">
+                                <span id="messageDurationValue">30s</span>
+                            </div>
                         </div>
-                        <div class="setting-item">
-                            <label for="autoTheme">Auto Theme Toggle</label>
-                            <input type="checkbox" id="autoTheme" aria-label="Enable auto theme toggle">
+                        <div class="settings-group">
+                            <h4>Theme Customization</h4>
+                            <div class="setting-item">
+                                <label for="themeSelector">Select Theme</label>
+                                <select id="themeSelector" aria-label="Select theme">
+                                    <option value="default">Default (Indigo)</option>
+                                    <option value="green">Green</option>
+                                    <option value="purple">Purple</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label for="accentColor">Custom Accent Color</label>
+                                <input type="color" id="accentColor" value="#6366F1" aria-label="Select custom accent color">
+                            </div>
+                            <div class="setting-item">
+                                <label for="autoTheme">Auto Theme Toggle</label>
+                                <input type="checkbox" id="autoTheme" aria-label="Enable auto theme toggle">
+                            </div>
                         </div>
                         <button class="btn primary" id="saveSettings" aria-label="Save settings">Save Settings</button>
                     </div>
