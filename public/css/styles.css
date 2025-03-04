@@ -1,22 +1,22 @@
 :root {
-    --primary-bg: #1B1F27;         /* A very dark gray-blue for the main background */
-    --secondary-bg: #283044;       /* A muted, professional dark blue for secondary elements */
-    --accent: #2ECC71;             /* A fresh, professional green accent */
-    --text-primary: #ECEFF1;       /* A light, clean off-white for primary text */
-    --text-secondary: #B0BEC5;     /* A balanced gray for secondary text */
-    --border-color: #394C59;       /* A subtle, refined gray for borders */
-    --success: #28a745;            /* A strong, professional green for success messages */
-    --error: #e74c3c;              /* A clear, professional red for errors */
+    --primary-bg: #0F172A;
+    --secondary-bg: #1E293B;
+    --accent: #0EA5E9;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --border-color: #334155;
+    --success: #00C9A7;
+    --error: #EF4444;
     --font-family: 'Inter', sans-serif;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="light"] {
-    --primary-bg: #F8FAFC;         /* A clean, light background */
-    --secondary-bg: #FFFFFF;       /* Pure white for secondary elements */
-    --text-primary: #0F172A;       /* Deep, professional dark text */
-    --text-secondary: #64748B;     /* A balanced medium gray for secondary text */
-    --border-color: #E2E8F0;       /* A soft, light gray for borders */
+    --primary-bg: #F8FAFC;
+    --secondary-bg: #FFFFFF;
+    --text-primary: #0F172A;
+    --text-secondary: #64748B;
+    --border-color: #E2E8F0;
 }
 
 * {
@@ -35,6 +35,7 @@ body {
 .dashboard-container {
     display: flex;
     min-height: 100vh;
+    position: relative;
 }
 
 /* Sidebar */
@@ -45,27 +46,58 @@ body {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    transition: var(--transition);
+    transition: transform 0.3s ease;
     position: fixed;
     height: 100vh;
     z-index: 1000;
+    transform: translateX(0);
+    overflow: hidden;
 }
 
 .sidebar.collapsed {
     transform: translateX(-100%);
 }
 
-/* Sidebar Toggle Button */
-.sidebar-toggle {
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 1100;
-    display: none;
+/* Sidebar Header */
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
 }
 
-.sidebar.collapsed ~ .sidebar-toggle {
-    display: block;
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+    background: rgba(255, 255, 255, 0.1); /* Subtle background for emphasis */
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--text-primary);
+    border-radius: 8px;
+    transition: var(--transition);
+    font-size: 1.5rem; /* Increase icon size */
+}
+
+.sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.2); /* Hover effect */
+    transform: scale(1.1); /* Slight scale-up on hover */
 }
 
 /* Navigation */
@@ -93,7 +125,7 @@ body {
 }
 
 .nav-item:hover {
-    background: rgba(46, 204, 113, 0.1);
+    background: rgba(14, 165, 233, 0.05);
 }
 
 /* Status Panel */
@@ -107,6 +139,14 @@ body {
     align-items: center;
     gap: 1rem;
     margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.05); /* Subtle background */
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.status-item:hover {
+    background: rgba(255, 255, 255, 0.1); /* Hover effect */
 }
 
 .status-info {
@@ -121,13 +161,23 @@ body {
 
 .status-value {
     font-weight: 500;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.status-value.connected {
+    color: var(--success); /* Green for connected */
+}
+
+.status-value.disconnected {
+    color: var(--error); /* Red for disconnected */
 }
 
 /* Main Content */
 .main-content {
     flex: 1;
     margin-left: 280px;
-    transition: var(--transition);
+    transition: margin-left 0.3s ease;
     padding: 2rem;
     min-height: 100vh;
 }
@@ -141,6 +191,36 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column; /* Stack the row and breadcrumb vertically */
+    align-items: flex-start; /* Align items to the left */
+    padding: 0.5rem 0; /* Add some vertical padding for breathing room */
+}
+
+.header-left .title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem; /* Reduce gap for tighter spacing between ☰ and text */
+}
+
+.header-left h2 {
+    font-size: 1.75rem; /* Larger font size for emphasis */
+    font-weight: 700; /* Bolder text */
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.header-left h2:hover {
+    color: var(--accent); /* Change color on hover for interactivity */
+}
+
+.header-left .breadcrumb {
+    font-size: 0.9rem; /* Slightly smaller font */
+    color: var(--text-secondary); /* Softer color for contrast */
+    margin-top: 0.2rem; /* Add a bit of spacing below the title */
 }
 
 .header-clock {
@@ -220,22 +300,7 @@ body {
 .message-input:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
-}
-
-.success-message {
-    background: var(--success);
-    color: white;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-}
-.error-message {
-    background: var(--error);
-    color: white;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
 /* Upload Zone */
@@ -249,7 +314,7 @@ body {
 
 .upload-zone.dragover {
     border-color: var(--accent);
-    background: rgba(46, 204, 113, 0.05);
+    background: rgba(14, 165, 233, 0.05);
 }
 
 .upload-content {
@@ -323,7 +388,7 @@ body {
 }
 
 .menu-item:hover {
-    background: rgba(46, 204, 113, 0.05);
+    background: rgba(14, 165, 233, 0.05);
 }
 
 .menu-divider {
@@ -350,6 +415,23 @@ body {
 
 .profile-info p {
     margin-bottom: 0.5rem;
+}
+
+/* Success and Error Messages */
+.success-message {
+    background: var(--success);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    background: var(--error);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
 }
 
 /* Responsive Design */

@@ -10,11 +10,6 @@
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Sidebar Toggle Button (for collapsed state) -->
-        <button class="icon-btn sidebar-toggle" id="sidebarToggle" style="display: none;">
-            <i class="fas fa-bars"></i>
-        </button>
-
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -24,7 +19,7 @@
                     </div>
                     <h1>DisplayCtrl</h1>
                 </div>
-                <button class="icon-btn sidebar-close">
+                <button class="icon-btn sidebar-toggle" id="sidebarToggle">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -63,7 +58,11 @@
         <main class="main-content">
             <header class="main-header">
                 <div class="header-left">
-                    <h2>Device Controller</h2>
+                    <div class="title-row">
+                        <!-- Toggle button will be injected here when sidebar is collapsed -->
+                        <span id="togglePlaceholder"></span>
+                        <h2>Device Controller</h2>
+                    </div>
                     <p class="breadcrumb">Dashboard / Main Display</p>
                 </div>
                 <div class="header-clock" id="headerClock"></div>
@@ -74,7 +73,7 @@
                 </div>
             </header>
 
-            <!-- Dashboard Section -->
+            <!-- Content Section -->
             <div class="content-section" id="dashboardSection">
                 <!-- Message Card -->
                 <div class="card message-card">
@@ -176,8 +175,8 @@
                     </div>
                     <div class="card-body">
                         <div class="profile-info">
-                            <p><strong>Name:</strong> <span id="profileName">Sherlock Holmes</span></p>
-                            <p><strong>Email:</strong> <span id="profileEmail">sherlock.@example.com</span></p>
+                            <p><strong>Name:</strong> <span id="profileName">John Doe</span></p>
+                            <p><strong>Email:</strong> <span id="profileEmail">john.doe@example.com</span></p>
                         </div>
                     </div>
                 </div>

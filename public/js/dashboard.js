@@ -14,32 +14,35 @@ class DashboardController {
         this.loadSettings();
         this.renderHistory();
         this.updateClock();
+        this.simulateWifiStatus(); // Add this to simulate WiFi status updates
         setInterval(() => this.updateClock(), 1000);
     }
 
     cacheElements() {
         this.sidebar = document.getElementById('sidebar');
         this.mainContent = document.querySelector('.main-content');
+        this.sidebarToggle = document.getElementById('sidebarToggle');
+        this.togglePlaceholder = document.getElementById('togglePlaceholder');
         this.themeToggle = document.getElementById('themeToggle');
         this.contextMenu = document.getElementById('contextMenu');
         this.uploadZone = document.getElementById('uploadZone');
         this.fileInput = document.getElementById('fileInput');
         this.wifiStatus = document.getElementById('wifiStatus');
-        this.messageInput = document.getElementById('messageInput');
-        this.sendButton = document.getElementById('sendButton');
-        this.previewText = document.getElementById('previewText');
-        this.previewImage = document.getElementById('previewImage');
-        this.fileList = document.getElementById('fileList');
         this.brightness = document.getElementById('brightness');
         this.autoTheme = document.getElementById('autoTheme');
         this.saveSettings = document.getElementById('saveSettings');
         this.historyList = document.getElementById('historyList');
         this.profileSection = document.getElementById('profileSection');
+        this.messageInput = document.getElementById('messageInput');
+        this.sendButton = document.getElementById('sendButton');
+        this.previewText = document.getElementById('previewText');
+        this.previewImage = document.getElementById('previewImage');
+        this.fileList = document.getElementById('fileList');
     }
 
     setupEventListeners() {
         // Sidebar Toggle
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
+        this.sidebarToggle.addEventListener('click', () => {
             this.toggleSidebar();
         });
 
@@ -112,8 +115,17 @@ class DashboardController {
 
     toggleSidebar() {
         this.sidebar.classList.toggle('collapsed');
-        const toggleButton = document.getElementById('sidebarToggle');
-        toggleButton.style.display = this.sidebar.classList.contains('collapsed') ? 'block' : 'none';
+        if (this.sidebar.classList.contains('collapsed')) {
+            // Move toggle button to main header
+            this.togglePlaceholder.appendChild(this.sidebarToggle);
+            this.sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            this.mainContent.style.marginLeft = '0';
+        } else {
+            // Move toggle button back to sidebar header
+            document.querySelector('.sidebar-header').appendChild(this.sidebarToggle);
+            this.sidebarToggle.innerHTML = '<i class="fas fa-times"></i>';
+            this.mainContent.style.marginLeft = '280px';
+        }
     }
 
     showSection(section) {
@@ -248,6 +260,16 @@ class DashboardController {
 
     updateClock() {
         document.getElementById('headerClock').textContent = new Date().toLocaleTimeString();
+    }
+
+    simulateWifiStatus() {
+        // Simulate WiFi status updates every 5 seconds
+        setInterval(() => {
+            const isConnected = Math.random() > 0.3; // 70% chance of being connected
+            this.wifiStatus.textContent = isConnected ? '2.4GHz' : 'Disconnected';
+            this.wifiStatus.classList.remove('connected', 'disconnected');
+            this.wifiStatus.classList.add(isConnected ? 'connected' : 'disconnected');
+        }, 5000);
     }
 
     showSuccess(message) {
