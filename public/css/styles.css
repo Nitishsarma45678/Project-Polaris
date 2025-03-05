@@ -288,10 +288,10 @@ body {
 .settings-panel,
 .history-panel,
 .profile-panel {
-    max-width: 1200px; /* Increased to accommodate two columns */
+    max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    grid-template-columns: 1fr 1fr;
     gap: 2rem;
 }
 
@@ -313,16 +313,23 @@ body {
     gap: 2rem;
 }
 
-.message-card {
-    grid-area: message;
+.preview-card {
+    width: 100%;
 }
 
-.upload-card {
-    grid-area: upload;
+.bottom-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.sos-card {
+    flex: 1;
+    min-width: 0;
 }
 
 .device-status-card {
-    grid-area: device-status;
+    flex: 0 0 200px; /* Fixed width, as previously set */
+    min-width: 0;
 }
 
 .card {
@@ -357,61 +364,16 @@ body {
     gap: 1.5rem;
 }
 
-/* Message Card (with Scheduling) */
-.schedule-toggle {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-}
-
-.schedule-options {
-    margin-bottom: 1rem;
-}
-
-.schedule-list {
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.schedule-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem;
-    border-bottom: 1px solid var(--border-color);
-    align-items: center;
-}
-
-.schedule-item button {
-    background: none;
-    border: none;
-    color: var(--error);
-    cursor: pointer;
-    padding: 0.25rem;
-}
-
-.schedule-item button:hover {
-    color: #E11D48; /* Slightly darker rose red */
-}
-
-/* Preview Card */
-.preview-card {
-    width: 100%; /* Full width in the right section */
-}
-
-/* SOS Card */
-.sos-card {
-    width: 100%; /* Full width in the right section */
-}
-
 .sos-list {
     background: var(--primary-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1rem;
-    max-height: 320px;
-    min-height: 320px;
+    max-height: 240px; /* Reduced to match preview-content height */
+    min-height: 240px;
     overflow-y: auto;
     position: relative;
+    width: 100%;
 }
 
 .sos-placeholder {
@@ -450,8 +412,8 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1rem;
-    width: 240px;
-    height: 320px;
+    width: 100%;
+    height: 240px; /* Reduced from 320px to make the card smaller */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -494,11 +456,48 @@ body {
     border-radius: 4px;
     color: var(--text-primary);
     font-size: 0.875rem;
+    width: 100px;
 }
 
 .preview-toolbar select:focus {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
+}
+
+/* Message Card (with Scheduling) */
+.schedule-toggle {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.schedule-options {
+    margin-bottom: 1rem;
+}
+
+.schedule-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.schedule-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+}
+
+.schedule-item button {
+    background: none;
+    border: none;
+    color: var(--error);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.schedule-item button:hover {
+    color: #E11D48;
 }
 
 /* Settings Card */
@@ -750,10 +749,24 @@ body {
 /* Responsive Design */
 @media (max-width: 1024px) {
     .content-section {
-        grid-template-columns: 1fr; /* Stack sections on smaller screens */
+        grid-template-columns: 1fr;
         grid-template-areas: 
             "left-section"
             "right-section";
+    }
+
+    .right-section {
+        flex-direction: column;
+    }
+
+    .bottom-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .sos-card,
+    .device-status-card {
+        width: 100%;
     }
 }
 
@@ -773,6 +786,26 @@ body {
 
     .content-section {
         max-width: 100%;
+    }
+
+    .preview-content {
+        width: 100%;
+        height: 200px; /* Further reduced for mobile */
+    }
+
+    .sos-list {
+        width: 100%;
+        max-height: 200px; /* Further reduced for mobile */
+        min-height: 200px;
+    }
+
+    .preview-toolbar select {
+        width: 80px;
+        font-size: 0.875rem;
+    }
+
+    .clear-sos-btn {
+        padding: 0.5rem 1rem;
     }
 }
 

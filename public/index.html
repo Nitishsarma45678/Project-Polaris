@@ -149,37 +149,6 @@
 
                 <!-- Right Section: Status and Monitoring Cards -->
                 <div class="right-section">
-                    <!-- Device Status Card -->
-                    <div class="card device-status-card">
-                        <div class="card-header">
-                            <i class="fas fa-microchip"></i>
-                            <h3>Device Status</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="status-item">
-                                <i class="fas fa-battery-three-quarters"></i>
-                                <div class="status-info">
-                                    <span class="status-label">Battery Level</span>
-                                    <span class="status-value" id="deviceBattery">75%</span>
-                                </div>
-                            </div>
-                            <div class="status-item">
-                                <i class="fas fa-thermometer-half"></i>
-                                <div class="status-info">
-                                    <span class="status-label">Temperature</span>
-                                    <span class="status-value" id="deviceTemperature">25°C</span>
-                                </div>
-                            </div>
-                            <div class="status-item">
-                                <i class="fas fa-clock"></i>
-                                <div class="status-info">
-                                    <span class="status-label">Uptime</span>
-                                    <span class="status-value" id="deviceUptime">1h 45m</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Preview Card -->
                     <div class="card preview-card">
                         <div class="card-header">
@@ -211,19 +180,53 @@
                         </div>
                     </div>
 
-                    <!-- SOS Alerts Card -->
-                    <div class="card sos-card">
-                        <div class="card-header">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <h3>SOS Alerts</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="sos-list" id="sosList">
-                                <p class="sos-placeholder" id="sosPlaceholder">No SOS alerts received.</p>
+                    <!-- Bottom Row: SOS Alerts and Device Status -->
+                    <div class="bottom-row">
+                        <!-- SOS Alerts Card -->
+                        <div class="card sos-card">
+                            <div class="card-header">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>SOS Alerts</h3>
                             </div>
-                            <button class="btn secondary clear-sos-btn" id="clearSOSButton" aria-label="Clear SOS alerts">
-                                <i class="fas fa-trash"></i> Clear Alerts
-                            </button>
+                            <div class="card-body">
+                                <div class="sos-list" id="sosList">
+                                    <p class="sos-placeholder" id="sosPlaceholder">No SOS alerts received.</p>
+                                </div>
+                                <button class="btn secondary clear-sos-btn" id="clearSOSButton" aria-label="Clear SOS alerts">
+                                    <i class="fas fa-trash"></i> Clear Alerts
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Device Status Card -->
+                        <div class="card device-status-card">
+                            <div class="card-header">
+                                <i class="fas fa-microchip"></i>
+                                <h3>Device Status</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="status-item">
+                                    <i class="fas fa-battery-three-quarters"></i>
+                                    <div class="status-info">
+                                        <span class="status-label">Battery Level</span>
+                                        <span class="status-value" id="deviceBattery">75%</span>
+                                    </div>
+                                </div>
+                                <div class="status-item">
+                                    <i class="fas fa-thermometer-half"></i>
+                                    <div class="status-info">
+                                        <span class="status-label">Temperature</span>
+                                        <span class="status-value" id="deviceTemperature">25°C</span>
+                                    </div>
+                                </div>
+                                <div class="status-item">
+                                    <i class="fas fa-clock"></i>
+                                    <div class="status-info">
+                                        <span class="status-label">Uptime</span>
+                                        <span class="status-value" id="deviceUptime">1h 45m</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
